@@ -22,7 +22,7 @@ const INK_MUTED = '#8a80b8';
 
 const SHOW_THIRD = false;
 
-const SCROLL_LENGTH = 7800;
+const SCROLL_LENGTH = 9800;
 const SCRUB = 3;
 
 const NURSERY_NAME = ['LITTLE', 'NEST'];
@@ -245,9 +245,89 @@ const MENU_ITEMS = [
   { id: 'approach', label: 'Our Approach', labelSmall: '03', timeline: 2.6 },
   { id: 'values', label: 'Our Values', labelSmall: '04', timeline: 3.6 },
   { id: 'team', label: 'Meet Our Team', labelSmall: '05', timeline: 10.2 },
-  { id: 'discover', label: 'Come & Know Us', labelSmall: '06', timeline: 19.4 },
-  { id: 'join', label: 'Join Our Family', labelSmall: '07', timeline: 26 },
+  { id: 'day', label: 'A Day at Little Nest', labelSmall: '06', timeline: 18.0 },
+  { id: 'discover', label: 'Come & Know Us', labelSmall: '07', timeline: 29.3 },
+  { id: 'join', label: 'Join Our Family', labelSmall: '08', timeline: 41.6 },
 ];
+
+// ==============================
+// A DAY AT LITTLE NEST
+// ==============================
+
+const DAY = [
+  {
+    time: '07:30',
+    title: 'Warm Welcome',
+    text: 'Hugs at the door, a cheerful hello and a calm, happy start to the day.',
+    image: '/day1.jpg',
+    sticker: '/sticker1.png',
+    color: PINK,
+    rot: -3,
+    stickerRot: -12,
+  },
+  {
+    time: '09:00',
+    title: 'Songs & Stories',
+    text: 'We gather in a cosy circle to sing, clap and dive into a brand new story.',
+    image: '/day2.jpg',
+    sticker: '/sticker2.png',
+    color: BLUE,
+    rot: 3,
+    stickerRot: 10,
+  },
+  {
+    time: '10:30',
+    title: 'Tasty Snack Time',
+    text: 'Fresh, colorful and healthy bites, shared at the table with new friends.',
+    image: '/day3.jpg',
+    sticker: '/sticker3.png',
+    color: MINT,
+    rot: -2,
+    stickerRot: -8,
+  },
+  {
+    time: '12:00',
+    title: 'Garden Play',
+    text: 'Running, climbing and splashing outside, where energy turns into confidence.',
+    image: '/day4.jpg',
+    sticker: '/sticker4.png',
+    color: YELLOW,
+    rot: 4,
+    stickerRot: 12,
+  },
+  {
+    time: '13:30',
+    title: 'Cozy Nap',
+    text: 'Soft blankets, dim lights and gentle lullabies for a calm, restful break.',
+    image: '/day5.jpg',
+    sticker: '/sticker5.png',
+    color: LIGHT_PINK,
+    rot: -4,
+    stickerRot: -10,
+  },
+  {
+    time: '15:30',
+    title: 'Art & Goodbye Hugs',
+    text: 'Little hands create something special to take home, then a big goodbye hug.',
+    image: '/day6.jpg',
+    sticker: '/sticker1.png',
+    color: BLUE,
+    rot: 3,
+    stickerRot: 8,
+  },
+];
+
+const DAY_START = 18.0; // when the day section starts sliding in
+const DAY_IN = 1.2; // slide-in duration
+const DAY_HOLD = 0.8; // pause before the first / after the last moment
+const DAY_STEP = 1.6; // time between two moments
+const DAY_TRANS = 0.7; // duration of one transition
+
+const DAY_LEN =
+  DAY_IN + DAY_HOLD + (DAY.length - 2) * DAY_STEP + DAY_TRANS + DAY_HOLD;
+
+// when the horizontal "Come & know us" section starts
+const H_AT = DAY_START + DAY_LEN;
 
 // ==============================
 // SHAPES
@@ -295,6 +375,11 @@ const MENU_SHAPES: Shape[] = [
   { src: '/shape2.png', left: '8%', bottom: '10%', size: 'clamp(44px, 5.5vw, 110px)', rot: 12, amp: 30, dur: 6.2, delay: -2 },
   { src: '/shape5.png', right: '6%', top: '14%', size: 'clamp(56px, 7vw, 140px)', rot: 10, amp: 28, dur: 6, delay: -1 },
   { src: '/shape6.png', right: '10%', bottom: '8%', size: 'clamp(44px, 5.5vw, 110px)', rot: -8, amp: 32, dur: 5.6, delay: -3 },
+];
+
+const DAY_SHAPES: Shape[] = [
+  { src: '/shape1.png', left: '2%', bottom: '20%', size: 'clamp(44px, 5vw, 96px)', rot: -10, amp: 26, dur: 5.4, delay: 0 },
+  { src: '/shape2.png', right: '3%', top: '24%', size: 'clamp(44px, 5vw, 96px)', rot: 12, amp: 30, dur: 6.2, delay: -2 },
 ];
 
 // ==============================
@@ -521,6 +606,7 @@ export default function Hero() {
   const ribbonSvgRef = useRef<SVGSVGElement>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const dayRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const windowGridRef = useRef<HTMLDivElement>(null);
 
@@ -951,6 +1037,41 @@ export default function Hero() {
       gsap.set(horizRef.current, { yPercent: 100 });
 
       // ==============================
+      // A DAY AT LITTLE NEST
+      // ==============================
+
+      const dayRoot = dayRef.current!;
+
+      const daySlides = gsap.utils.toArray<HTMLElement>('.day-slide', dayRoot);
+      const dayPhotos = gsap.utils.toArray<HTMLElement>('.day-photo', dayRoot);
+      const dayStickers = gsap.utils.toArray<HTMLElement>('.day-sticker', dayRoot);
+      const dayDots = gsap.utils.toArray<HTMLElement>('.day-dot', dayRoot);
+
+      const dayFill = dayRoot.querySelector<HTMLElement>('.day-fill');
+      const daySun = dayRoot.querySelector<HTMLElement>('.day-sun');
+
+      gsap.set(dayRoot, { yPercent: 100 });
+      gsap.set(daySlides.slice(1), { autoAlpha: 0, y: 50 });
+
+      dayPhotos.forEach((el, i) => {
+        gsap.set(el, {
+          rotation: i === 0 ? DAY[i].rot : DAY[i].rot + 10,
+          scale: i === 0 ? 1 : 0.8,
+        });
+      });
+
+      dayStickers.forEach((el, i) => {
+        gsap.set(el, {
+          rotation: DAY[i].stickerRot,
+          scale: i === 0 ? 1 : 0,
+        });
+      });
+
+      gsap.set(dayDots[0], { backgroundColor: INK, scale: 1.3 });
+      gsap.set(dayFill, { scaleX: 0, transformOrigin: '0% 50%' });
+      gsap.set(daySun, { left: '0%' });
+
+      // ==============================
       // STEPS
       // ==============================
 
@@ -1182,11 +1303,97 @@ export default function Hero() {
         // HORIZONTAL
         // ==============================
 
+        // ==============================
+        // A DAY AT LITTLE NEST
+        // ==============================
+
+        scrollTl.to(
+          dayRoot,
+          { yPercent: 0, duration: DAY_IN, ease: 'power2.inOut' },
+          DAY_START
+        );
+
+        scrollTl.addLabel('day', DAY_START);
+
+        {
+          const dayPct = (i: number) => `${(i / (DAY.length - 1)) * 100}%`;
+
+          for (let i = 1; i < DAY.length; i++) {
+            const at = DAY_START + DAY_IN + DAY_HOLD + (i - 1) * DAY_STEP;
+
+            scrollTl
+              .to(
+                daySlides[i - 1],
+                {
+                  autoAlpha: 0,
+                  y: -50,
+                  duration: DAY_TRANS * 0.8,
+                  ease: 'power2.in',
+                },
+                at
+              )
+              .to(
+                daySlides[i],
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: DAY_TRANS,
+                  ease: 'power2.out',
+                },
+                at + DAY_TRANS * 0.4
+              )
+              .to(
+                dayPhotos[i],
+                {
+                  scale: 1,
+                  rotation: DAY[i].rot,
+                  duration: DAY_TRANS,
+                  ease: 'back.out(1.6)',
+                },
+                at + DAY_TRANS * 0.4
+              )
+              .to(
+                dayStickers[i],
+                { scale: 1, duration: 0.5, ease: 'back.out(2.2)' },
+                at + DAY_TRANS * 0.9
+              )
+              .fromTo(
+                dayRoot,
+                { backgroundColor: DAY[i - 1].color },
+                {
+                  backgroundColor: DAY[i].color,
+                  duration: DAY_TRANS,
+                  ease: 'none',
+                },
+                at
+              )
+              .to(
+                daySun,
+                { left: dayPct(i), duration: DAY_TRANS, ease: 'power2.inOut' },
+                at
+              )
+              .to(
+                dayFill,
+                {
+                  scaleX: i / (DAY.length - 1),
+                  duration: DAY_TRANS,
+                  ease: 'power2.inOut',
+                },
+                at
+              )
+              .to(
+                dayDots[i],
+                { backgroundColor: INK, scale: 1.3, duration: 0.3 },
+                at + DAY_TRANS * 0.5
+              );
+          }
+        }
+
         scrollTl
           .to(
             horizRef.current,
             { yPercent: 0, duration: 1.2, ease: 'power2.inOut' },
-            18.0
+            H_AT
           )
           .to(
             horizTrackRef.current,
@@ -1196,10 +1403,10 @@ export default function Hero() {
               duration: HORIZ_UNITS,
               ease: easeHoriz,
             },
-            19.4
+            H_AT + 1.4
           );
 
-        scrollTl.addLabel('discover', 19.4);
+        scrollTl.addLabel('discover', H_AT + 1.4);
 
         // ==============================
         // TEAM INTERACTION
@@ -1232,7 +1439,7 @@ export default function Hero() {
               duration: HORIZ_UNITS,
               ease: easeHoriz,
             },
-            19.4
+            H_AT + 1.4
           );
         });
 
@@ -1258,14 +1465,14 @@ export default function Hero() {
               updateRibbon();
             },
           },
-          19.4
+          H_AT + 1.4
         );
 
         // ==============================
         // STEPS
         // ==============================
 
-        const STEPS_AT = 19.4 + HORIZ_UNITS + 0.6;
+        const STEPS_AT = H_AT + 1.4 + HORIZ_UNITS + 0.6;
 
         scrollTl
           .to(
@@ -1339,7 +1546,8 @@ export default function Hero() {
         scrollTl.addLabel('land-approach', 2.0);
         scrollTl.addLabel('land-values', 5.4);
         scrollTl.addLabel('land-team', 17.2);
-        scrollTl.addLabel('land-discover', 19.4);
+        scrollTl.addLabel('land-day', DAY_START + DAY_IN + DAY_HOLD);
+        scrollTl.addLabel('land-discover', H_AT + 1.4);
         scrollTl.addLabel('land-join', STEPS_AT + 5.8);
 
         scrollTl.to({}, { duration: 1 }, STEPS_AT + 6.5);
@@ -1919,6 +2127,160 @@ export default function Hero() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* =====================================================
+            A DAY AT LITTLE NEST
+            ===================================================== */}
+
+        <div
+          ref={dayRef}
+          id="day"
+          dir="ltr"
+          className="pointer-events-none absolute inset-0 z-[65] overflow-hidden text-[#4b3b8f]"
+          style={{ backgroundColor: DAY[0].color }}
+        >
+          {/* Grid */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.10]"
+            style={{
+              backgroundImage: `
+                linear-gradient(
+                  to right,
+                  rgba(75, 59, 143, 0.22) 1px,
+                  transparent 1px
+                ),
+                linear-gradient(
+                  to bottom,
+                  rgba(75, 59, 143, 0.22) 1px,
+                  transparent 1px
+                )
+              `,
+              backgroundSize: '42px 42px',
+            }}
+          />
+
+          <FloatingShapes shapes={DAY_SHAPES} />
+
+          {/* Label */}
+          <div className="absolute left-5 top-6 z-30 md:left-12 md:top-8">
+            <span className="inline-block rounded-full bg-[#4b3b8f] px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow-lg md:text-xs">
+              A Day at Little Nest
+            </span>
+          </div>
+
+          {/* Slides */}
+          {DAY.map((d, i) => (
+            <div
+              key={d.time}
+              className={`day-slide absolute inset-0 z-10 flex items-center ${
+                i === 0 ? '' : 'invisible opacity-0'
+              }`}
+            >
+              <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-4 px-6 pb-32 pt-24 md:grid-cols-2 md:gap-10 md:px-12 md:pt-20">
+                {/* Text */}
+                <div className="order-2 text-left md:order-1">
+                  <span className="mb-2 inline-block rounded-full bg-white/60 px-3 py-1 text-xs font-extrabold tracking-widest md:mb-4">
+                    {String(i + 1).padStart(2, '0')} /{' '}
+                    {String(DAY.length).padStart(2, '0')}
+                  </span>
+
+                  <div className="text-[clamp(4.2rem,15vw,13rem)] font-black leading-[0.85] tracking-tighter">
+                    {d.time}
+                  </div>
+
+                  <h3 className="mt-3 text-[clamp(1.7rem,4vw,3.4rem)] font-black leading-tight tracking-tight md:mt-5">
+                    {d.title}
+                  </h3>
+
+                  <p className="mt-2 max-w-md text-sm font-medium leading-relaxed text-[#5a4d99] md:mt-3 md:text-lg">
+                    {d.text}
+                  </p>
+                </div>
+
+                {/* Photo */}
+                <div className="order-1 flex justify-center md:order-2 md:justify-end md:pr-[6%]">
+                  <div className="relative">
+                    <div className="day-photo aspect-[3/4] h-[min(34vh,340px)] overflow-hidden rounded-b-[2rem] rounded-t-[999px] bg-[#eaf4fa] shadow-xl md:h-[min(62vh,620px)]">
+                      <img
+                        src={d.image}
+                        alt={d.title}
+                        draggable={false}
+                        className="h-full w-full select-none object-cover"
+                      />
+                    </div>
+
+                    <div className="day-sticker absolute -right-6 -top-4 h-16 w-16 md:-right-10 md:-top-6 md:h-28 md:w-28">
+                      <img
+                        src={d.sticker}
+                        alt=""
+                        draggable={false}
+                        className="shape-float h-full w-full select-none object-contain"
+                        style={
+                          {
+                            '--amp': '-10px',
+                            '--dur': '3.8s',
+                            '--delay': `${-i * 0.6}s`,
+                          } as CSSProperties
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Progress track */}
+          <div className="absolute inset-x-0 bottom-6 z-20 md:bottom-10">
+            <div className="relative mx-auto h-10 w-[min(84vw,880px)]">
+              <div
+                className="absolute left-0 h-[3px] w-full rounded-full bg-[#4b3b8f]/20"
+                style={{ top: 'calc(50% - 1.5px)' }}
+              />
+
+              <div
+                className="day-fill absolute left-0 h-[3px] w-full rounded-full bg-[#4b3b8f]"
+                style={{ top: 'calc(50% - 1.5px)' }}
+              />
+
+              {DAY.map((d, i) => (
+                <div key={`dot-${d.time}`}>
+                  <span
+                    className="day-dot absolute h-3 w-3 rounded-full bg-[#4b3b8f]/25"
+                    style={{
+                      left: `${(i / (DAY.length - 1)) * 100}%`,
+                      top: 'calc(50% - 6px)',
+                      marginLeft: -6,
+                    }}
+                  />
+
+                  <span
+                    className="absolute hidden whitespace-nowrap text-[11px] font-bold sm:block"
+                    style={{
+                      left: `${(i / (DAY.length - 1)) * 100}%`,
+                      top: 'calc(50% + 14px)',
+                      transform: 'translateX(-50%)',
+                    }}
+                  >
+                    {d.time}
+                  </span>
+                </div>
+              ))}
+
+              <div
+                className="day-sun absolute z-10 h-9 w-9"
+                style={{ top: 'calc(50% - 18px)', marginLeft: -18 }}
+              >
+                <span className="badge-spin absolute -inset-1.5 rounded-full border-2 border-dashed border-[#4b3b8f]" />
+
+                <span
+                  className="absolute inset-0 rounded-full border-[3px] border-[#4b3b8f]"
+                  style={{ backgroundColor: YELLOW }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* =====================================================
