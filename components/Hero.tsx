@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// لوحة الألوان
+// Palette
 const PINK = '#f3b9d0';
 const LIGHT_PINK = '#f9dce8';
 const BLUE = '#bfe0f0';
@@ -347,13 +347,15 @@ type Shape = {
   translate?: string;
 };
 
+// Each section uses unique shapes (no repeats inside the same section).
+// shape2 appears ONLY in the hero (first blue background).
 const HERO_SHAPES: Shape[] = [
   {
     src: '/shape2.png',
     right: '0%',
     bottom: '20%',
     translate: '50% 0',
-    size: 'clamp(120px, 12vw, 220px)',
+    size: 'clamp(150px, 15vw, 280px)',
     rot: 14,
     amp: 12,
     dur: 5.4,
@@ -362,24 +364,20 @@ const HERO_SHAPES: Shape[] = [
 ];
 
 const TEAM_SHAPES: Shape[] = [
-  { src: '/shape1.png', left: '6%', top: '12%', size: 'clamp(64px, 8vw, 160px)', rot: -10, amp: 34, dur: 5.2, delay: 0 },
-  { src: '/shape2.png', left: '14%', bottom: '14%', size: 'clamp(56px, 6.8vw, 136px)', rot: 12, amp: 40, dur: 6.1, delay: -2 },
-  { src: '/shape4.png', right: '28%', top: '12%', size: 'clamp(48px, 5.6vw, 116px)', rot: -14, amp: 30, dur: 5.8, delay: -3 },
-  { src: '/shape5.png', right: '8%', top: '18%', size: 'clamp(68px, 8.6vw, 172px)', rot: 10, amp: 36, dur: 6.4, delay: -0.5 },
-  { src: '/shape6.png', right: '14%', bottom: '12%', size: 'clamp(56px, 6.8vw, 136px)', rot: -8, amp: 42, dur: 5.6, delay: -2.5 },
-  { src: '/shape1.png', right: '40%', bottom: '10%', size: 'clamp(44px, 4.8vw, 100px)', rot: -6, amp: 28, dur: 5, delay: -3.2 },
+  { src: '/shape1.png', left: '6%', top: '10%', size: 'clamp(84px, 10.5vw, 210px)', rot: -10, amp: 34, dur: 5.2, delay: 0 },
+  { src: '/shape4.png', left: '14%', bottom: '12%', size: 'clamp(76px, 9vw, 180px)', rot: -14, amp: 30, dur: 5.8, delay: -3 },
+  { src: '/shape5.png', right: '8%', top: '14%', size: 'clamp(88px, 11vw, 220px)', rot: 10, amp: 36, dur: 6.4, delay: -0.5 },
+  { src: '/shape6.png', right: '14%', bottom: '10%', size: 'clamp(76px, 9vw, 180px)', rot: -8, amp: 42, dur: 5.6, delay: -2.5 },
 ];
 
 const MENU_SHAPES: Shape[] = [
-  { src: '/shape1.png', left: '5%', top: '14%', size: 'clamp(50px, 6vw, 120px)', rot: -10, amp: 26, dur: 5.4, delay: 0 },
-  { src: '/shape2.png', left: '8%', bottom: '10%', size: 'clamp(44px, 5.5vw, 110px)', rot: 12, amp: 30, dur: 6.2, delay: -2 },
-  { src: '/shape5.png', right: '6%', top: '14%', size: 'clamp(56px, 7vw, 140px)', rot: 10, amp: 28, dur: 6, delay: -1 },
-  { src: '/shape6.png', right: '10%', bottom: '8%', size: 'clamp(44px, 5.5vw, 110px)', rot: -8, amp: 32, dur: 5.6, delay: -3 },
+  { src: '/shape1.png', left: '5%', top: '12%', size: 'clamp(70px, 8vw, 160px)', rot: -10, amp: 26, dur: 5.4, delay: 0 },
+  { src: '/shape5.png', right: '6%', top: '12%', size: 'clamp(76px, 9vw, 180px)', rot: 10, amp: 28, dur: 6, delay: -1 },
+  { src: '/shape6.png', right: '10%', bottom: '8%', size: 'clamp(66px, 7.5vw, 150px)', rot: -8, amp: 32, dur: 5.6, delay: -3 },
 ];
 
 const DAY_SHAPES: Shape[] = [
-  { src: '/shape1.png', left: '2%', bottom: '20%', size: 'clamp(44px, 5vw, 96px)', rot: -10, amp: 26, dur: 5.4, delay: 0 },
-  { src: '/shape2.png', right: '3%', top: '24%', size: 'clamp(44px, 5vw, 96px)', rot: 12, amp: 30, dur: 6.2, delay: -2 },
+  { src: '/shape1.png', left: '2%', bottom: '20%', size: 'clamp(64px, 7vw, 140px)', rot: -10, amp: 26, dur: 5.4, delay: 0 },
 ];
 
 // ==============================
@@ -617,7 +615,7 @@ export default function Hero() {
   const navigateToSection = (id: string) => {
     const trigger = scrollTriggerRef.current;
     const timeline = trigger?.animation as gsap.core.Timeline | undefined;
-    const target = document.getElementById(id); // العنصر بالـ id
+    const target = document.getElementById(id);
     const overlay = overlayRef.current;
     const item = MENU_ITEMS.find((m) => m.id === id);
 
@@ -626,7 +624,7 @@ export default function Hero() {
       return;
     }
 
-    // وقت هبوط القسم: لابل land-<id> (حيث يكتمل ظهور القسم)
+    // Landing time: label land-<id> (where the section is fully visible)
     const label = timeline.labels[`land-${id}`] ?? timeline.labels[id];
     const targetTime = typeof label === 'number' ? label : item.timeline;
 
@@ -638,14 +636,14 @@ export default function Hero() {
 
     setMenuOpen(false);
 
-    // انتقال مباشر: تلاشي -> قفز للقسم -> ظهور
+    // Direct jump: fade out -> jump to section -> fade in
     gsap
       .timeline()
       .to(overlay, { autoAlpha: 1, duration: 0.35, ease: 'power2.inOut' })
       .add(() => {
         window.scrollTo({ top: targetScroll, behavior: 'auto' });
         ScrollTrigger.update();
-        trigger.getTween()?.progress(1); // ينهي تأثير scrub فوراً
+        trigger.getTween()?.progress(1); // finish the scrub tween immediately
       })
       .to(overlay, {
         autoAlpha: 0,
@@ -674,8 +672,9 @@ export default function Hero() {
   useLayoutEffect(() => {
     type Pt = { x: number; y: number };
 
-    // عند الريفرش: لا نسمح للمتصفح باسترجاع موضع التمرير (كان يهبط على الفوتر)
-    // ونقفل التمرير حتى تنتهي حركة الدخول ويُنشأ الـ ScrollTrigger.
+    // On refresh: stop the browser from restoring the scroll position
+    // (it used to land on the footer) and lock scrolling until the intro
+    // finishes and the ScrollTrigger is created.
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
@@ -1123,6 +1122,10 @@ export default function Hero() {
         .to(heroShapesRef.current, { opacity: 1, duration: 1.2 }, 'open+=0.6')
         .to(subRef.current, { opacity: 1, y: 0, duration: 1.2 }, '-=0.6');
 
+      // All initial GSAP states (including the intro's from() state) are now
+      // applied, so the CSS gate can be lifted without any flash.
+      document.documentElement.dataset.heroInit = 'true';
+
       // ==============================
       // MAIN SCROLL TIMELINE
       // ==============================
@@ -1130,7 +1133,7 @@ export default function Hero() {
       function initScrollAnimation() {
         const arch = { depth: 0 };
 
-        // انتهت حركة الدخول: نفتح التمرير ونُظهر الفوتر
+        // Intro finished: unlock scrolling and show the footer
         document.documentElement.style.overflow = '';
         document.documentElement.dataset.heroReady = 'true';
 
@@ -1185,7 +1188,7 @@ export default function Hero() {
             },
             0.3
           )
-          // خلفية زرقاء بطول الشاشة كاملة تظهر أثناء توسّع النافذة
+          // Full-screen blue backdrop appears while the window expands
           .to(backdropRef.current, { opacity: 1, duration: 1, ease: 'none' }, 0.3)
           .to(windowGridRef.current, { opacity: 0, duration: 1, ease: 'none' }, 0.3)
           .to(nextContentRef.current, { opacity: 1, duration: 0.5 }, 1.1);
@@ -1300,10 +1303,6 @@ export default function Hero() {
         scrollTl.addLabel('team', 10.2);
 
         // ==============================
-        // HORIZONTAL
-        // ==============================
-
-        // ==============================
         // A DAY AT LITTLE NEST
         // ==============================
 
@@ -1388,6 +1387,10 @@ export default function Hero() {
               );
           }
         }
+
+        // ==============================
+        // HORIZONTAL
+        // ==============================
 
         scrollTl
           .to(
@@ -1539,8 +1542,8 @@ export default function Hero() {
           }
         });
 
-        // نقاط الهبوط: اللحظة التي يكتمل فيها ظهور كل قسم
-        // (تُضاف قبل shiftChildren ليتم ترحيلها معه تلقائياً)
+        // Landing points: the moment each section is fully visible
+        // (added before shiftChildren so they get shifted automatically)
         scrollTl.addLabel('land-hero', 0);
         scrollTl.addLabel('land-story', 1.6);
         scrollTl.addLabel('land-approach', 2.0);
@@ -1563,6 +1566,7 @@ export default function Hero() {
     return () => {
       document.documentElement.style.overflow = '';
       delete document.documentElement.dataset.heroReady;
+      delete document.documentElement.dataset.heroInit;
 
       ScrollTrigger.removeEventListener('refreshInit', buildRibbon);
 
@@ -1574,10 +1578,22 @@ export default function Hero() {
 
   return (
     <>
-      {/* الفوتر مخفي حتى يجهز الـ ScrollTrigger (يمنع ظهوره قبل الباقي) */}
+      {/* Footer stays hidden until the ScrollTrigger is ready.
+          The off-screen sections stay hidden (visibility) until GSAP has
+          applied their initial states, so the last section (#join, highest
+          z-index) can never flash on first paint / refresh. */}
       <style>{`
         html:not([data-hero-ready='true']) [data-site-footer] {
           display: none !important;
+        }
+
+        html:not([data-hero-init='true']) #values,
+        html:not([data-hero-init='true']) #team,
+        html:not([data-hero-init='true']) #day,
+        html:not([data-hero-init='true']) #discover,
+        html:not([data-hero-init='true']) #join,
+        html:not([data-hero-init='true']) .hero-gate {
+          visibility: hidden !important;
         }
       `}</style>
 
@@ -1716,7 +1732,7 @@ export default function Hero() {
         <div
           ref={backdropRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0"
+          className="hero-gate pointer-events-none absolute inset-0 z-0"
           style={{ backgroundColor: BLUE_BASE }}
         >
           <div
@@ -1740,7 +1756,7 @@ export default function Hero() {
         </div>
 
         <div className="relative z-[1] flex flex-col items-center gap-7 px-6 text-center">
-          <div ref={stageRef} className="flex flex-col items-center">
+          <div ref={stageRef} className="hero-gate flex flex-col items-center">
             <span
               ref={topRef}
               className="block whitespace-nowrap text-[clamp(2.2rem,7vw,6rem)] font-extrabold uppercase leading-none tracking-tight"
@@ -1764,7 +1780,7 @@ export default function Hero() {
             >
               <div
                 ref={bgRef}
-                className="absolute inset-0 overflow-hidden"
+                className="hero-gate absolute inset-0 overflow-hidden"
                 style={{
                   borderRadius: 110,
                   clipPath: 'url(#arch-clip)',
@@ -1803,7 +1819,7 @@ export default function Hero() {
                 <div
                   ref={nextContentRef}
                   id="story"
-                  className="absolute inset-0 z-10 flex items-center justify-center px-[6vw] text-center text-[#4b3b8f]"
+                  className="hero-gate absolute inset-0 z-10 flex items-center justify-center px-[6vw] text-center text-[#4b3b8f]"
                 >
                   <p className="max-w-[1400px] text-[clamp(1.7rem,4.7vw,5.2rem)] font-extrabold leading-[1.08] tracking-tight">
                     {INTRO_PARTS.map((part, i) =>
@@ -1825,7 +1841,7 @@ export default function Hero() {
 
               <div
                 ref={heroShapesRef}
-                className="pointer-events-none absolute inset-0"
+                className="hero-gate pointer-events-none absolute inset-0"
               >
                 <FloatingShapes shapes={HERO_SHAPES} />
 
@@ -1855,7 +1871,7 @@ export default function Hero() {
             </span>
           </div>
 
-          <div ref={subRef} className="flex flex-col items-center gap-5">
+          <div ref={subRef} className="hero-gate flex flex-col items-center gap-5">
             <p className="max-w-[520px] text-[1.05rem] font-medium leading-relaxed text-[#7b7694]">
               Play &amp; learn, grow together. A warm, playful nursery where
               every child feels safe, curious and loved.
@@ -1864,7 +1880,7 @@ export default function Hero() {
             <button
               type="button"
               onClick={() => navigateToSection('join')}
-              className="rounded-full bg-[#4b3b8f] px-8 py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white shadow-lg transition duration-300 hover:scale-105"
+              className="rounded-full bg-[#4b3b8f] px-8 py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-[#f6ebb9] shadow-lg transition duration-300 hover:scale-105"
             >
               Contact us
             </button>
@@ -1879,7 +1895,7 @@ export default function Hero() {
           id="approach"
           className="pointer-events-none absolute inset-0 z-20 flex items-center justify-start px-[8%]"
         >
-          <div ref={thirdTextRef} className="max-w-sm text-left">
+          <div ref={thirdTextRef} className="hero-gate max-w-sm text-left">
             <h2 className="mb-3 text-4xl font-bold text-[#4b3b8f]">
               Our Approach
             </h2>
@@ -2430,4 +2446,5 @@ export default function Hero() {
       </section>
     </>
   );
+  
 }
